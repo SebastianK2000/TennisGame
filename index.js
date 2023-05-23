@@ -1,11 +1,19 @@
-const canvas = document.querySelector('canvas');
-        const ctx = canvas.getContext('2d');
+const canvas_1 = document.querySelector('canvas');
+        const ctx = canvas_1.getContext('2d');
 
-        canvas.width = 1000;
-        canvas.height = 500;
+        canvas_1.width = 1000;
+        canvas_1.height = 500;
 
-        const cw = canvas.width;
-        const ch = canvas.height;
+        let playerSorce = 0;  // wynik gracza
+        let aiSorce = 0;  // wynik komputera
+
+        const ScorePlayer = document.getElementById('playerPKT'); // wyświetlanie wyniku gracza
+        const ScoreAi = document.getElementById('aiPKT'); // wyświetlanie wyniku komputera
+
+        // parametry boiska 
+
+        const cw = canvas_1.width;
+        const ch = canvas_1.height;
 
         // tworzenie skrótów zmiennych na własne potrzeby
 
@@ -28,6 +36,12 @@ const canvas = document.querySelector('canvas');
         let ballSpeedX = 4;
         let ballSpeedY = 4;
 
+        let newGame = true;
+
+     cancasTop = canvas_1.offsetTop;
+
+        canvas_1.addEventListener("mousemove", playerPos);
+
         function player() {
             ctx.fillStyle = 'red';
             ctx.fillRect(playerX, playerY, paddelWidth, paddelHeight);
@@ -47,24 +61,110 @@ const canvas = document.querySelector('canvas');
 
         }
 
-
-        function ball() {
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(ballX, ballY, ballSize, ballSize);
-
-            ballX += ballSpeedX;
-            ballY += ballSpeedY;
+        function aiMove()
+        {
+            const middlePadel = aiY + paddelH/2;
+            const middleBall = ballY + ballSize/2;
             
-            if (ballY <= 0 || ballY + ballSize >= ch) {
-                ballSpeedY = -ballSpeedY;
-                speedUp();
+            if(ballX >= 500)
+            {
+                if(middlePadel - middleBall > 200)
+                {
+                    aiY -= 15;
+                }
+                else if(middlePadel - middleBall > 40)
+                {
+                    aiY -= 8;        
+                }
+                else if(middlePadel - middleBall < -200)
+                {
+                    aiY += 15;
+                }
+                else if(middlePadel - middleBall < -40)
+                {
+                    aiY += 8;
+                }   
             }
-
-            if (ballX <= 0 || ballX + ballSize >= cw) {
-                ballSpeedX = -ballSpeedX;
-                speedUp();
+            else if(ballX < 500)
+            {
+                if(middlePadel - middleBall > 100)
+                {
+                    aiY -= 4;
+                }
+                else if(middlePadel - middleBall < -100)
+                {
+                    aiY += 4;
+                }
             }
         }
+
+        function playerPos(e)
+{
+    playerY = e.clientY - cancasTop - paddelHeight / 2;
+
+    if(playerY < 0)
+    {
+        playerY = 0;
+    }
+
+    if(playerY > ch - paddelHeight)
+    {
+        playerY = ch - paddelHeight;
+    } 
+}
+
+function ball()
+{
+    ctx.fillStyle = 'yellow';
+    ctx.fillRect(ballX, ballY, ballSize, ballSize);
+
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+
+    if(ballY <= 0)
+    {
+        ballSpeedY *= -1;
+        ballY = 0;
+        speedUp();
+    }
+
+    if(ballY >= ch - ballSize)
+    {
+        ballSpeedY *= -1;
+        ballY = ch - ballSize;
+        speedUp();
+    }
+
+    if(ballX + ballSize >= cw)
+    {
+        reset(true);
+    }
+
+    if(ballX <= 0)
+    {
+        reset(false);
+    }
+
+    if(ballX <= playerX + paddelWidth && 
+       ballX >= playerX && 
+       ballY + ballSize >= playerY && 
+       ballY <= playerY + paddelHeight)
+    { 
+        ballSpeedX *= -1;
+        ballX = playerX + paddelWidth;  
+        speedUp();
+    }
+
+    if(ballX + ballSize >= aiX && 
+       ballX + ballSize <= aiX + paddelWidth &&
+       ballY + ballSize >= aiY && 
+       ballY <= aiY + paddelHeight)
+    {
+        ballSpeedX *= -1;
+        ballX = aiX - ballSize;
+        speedUp();
+    }
+} 
 
         function table() {
             ctx.fillStyle = 'black';
@@ -78,9 +178,36 @@ const canvas = document.querySelector('canvas');
         }
     }
 
+    function reset(who) { 
+        if (who)
+        {
+            ScorePlayer.textContent = ++playerSorce;
+        } else { 
+            ScoreAi.textContent = ++aiSorce;
+        }
+        newGame = true;
+    }
+
+    function ballReset() {
+        ballX = playerX + paddelWidth;
+        ballY = playerY + paddelHeight / 2 - ballSize / 2;
+        ctx.fillStyle = 'red';
+        ctx.fillRect(ballX, ballY, ballSize, ballSize);
+
+
+        canvas_1.addEventListener("click", play);
+    }
+
+    function play() {
+        newGame = false;
+        ballSpeedX = 4;
+        ballSpeedY = 4;
+    }
     
 
-    topCanvas = canvas.offsetTop;
+    
+
+    topCanvas = canvas_1.offsetTop;
     console.log(topCanvas)
 
     function playerPosition(e) {
@@ -162,16 +289,21 @@ function aiPosition() {
 
 
 
-canvas.addEventListener("mousemove", playerPosition)
+canvas_1.addEventListener("mousemove", playerPosition)
 
 // wypisujemy zmienną która będzie zwracała uwagę na ruch naszej myszki
 
 
 // pętla lini środkowej oraz funkcja tablicy głównej
 
-        function game() {
-        table()
-        ball()
+        function game() 
+        {
+        table();
+        if(!newGame) 
+        {
+            ball();
+        } else { ballReset();
+        } 
         player()
         ai()
         aiPosition()
