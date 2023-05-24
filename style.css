@@ -1,7 +1,7 @@
 body{
     margin: 0;
     padding: 0;
-    background-color: darkslategray;
+    background-color: gray;
   }
 
   .gra{
@@ -10,14 +10,10 @@ body{
     justify-content: center;
     height: 80vh;
   }
-  canvas{
-    border: 5px solid #fff;
-    cursor: none;
-  }
 
   p{
     padding: 0 0.3em;
     font-size: 5em;
-    color: #47ff00;
+    color: darkgrey;
     text-align: center;
   }
