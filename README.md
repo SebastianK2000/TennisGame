@@ -1,5 +1,9 @@
 ## Gra Tenis w HTML5, CSS3 i JavaScript
 
+## Link to the game:
+
+https://game-tennis-in-js.netlify.app
+
 ENG 
 
 A simple tennis game written in HTML5, CSS3 and JavaScript. In the game you can compete against the computer by bouncing the ball with a racket and scoring points. Your goal is to bounce the ball so that it does not cross the bottom edge of the screen, while trying to score as many points as possible.
